@@ -1,108 +1,153 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import AnimatedBackground from './AnimatedBackground';
+import SafeIcon from '../common/SafeIcon';
+import * as FiIcons from 'react-icons/fi';
+import { useUser } from '../context/UserContext';
+import ConnectionAnimation from './ConnectionAnimation';
+import SignupModal from './SignupModal';
 
-const LandingPage = ({ onSignup }) => {
-  const [formData, setFormData] = useState({
-    userProfile: '',
-    targetProfile: ''
-  });
+const { FiArrowRight, FiCheck, FiUsers, FiTarget, FiTrendingUp, FiZap } = FiIcons;
 
-  const handleGenerateClick = () => {
-    // For now, we'll trigger the signup flow
-    // In a real app, this would process the ice breaker generation
-    onSignup({
-      fullName: 'User',
-      email: 'user@example.com',
-      userProfile: formData.userProfile,
-      targetProfile: formData.targetProfile
-    });
+const LandingPage = () => {
+  const [showSignupModal, setShowSignupModal] = useState(false);
+  const { setUser } = useUser();
+  const navigate = useNavigate();
+
+  const features = [
+    {
+      icon: FiUsers,
+      title: 'F.O.R.D. Framework',
+      description: 'Generate ice breakers based on Family, Occupation, Recreation, and Dreams.'
+    },
+    {
+      icon: FiTrendingUp,
+      title: 'Value-Add Suggestions',
+      description: 'Get specific, actionable recommendations to provide genuine value.'
+    },
+    {
+      icon: FiZap,
+      title: 'Instant Results',
+      description: 'Generate personalized conversation starters in seconds, not hours.'
+    }
+  ];
+
+  const handleGetStarted = () => {
+    setShowSignupModal(true);
+  };
+
+  const handleSignupSuccess = (userData) => {
+    setUser(userData);
+    setShowSignupModal(false);
+    navigate('/dashboard');
   };
 
   return (
-    <div className="min-h-screen relative" style={{ backgroundColor: '#0B1F3F' }}>
-      {/* Background Animation */}
-      <AnimatedBackground />
+    <div className="relative min-h-screen">
+      <ConnectionAnimation />
       
-      {/* Sign In Button - Top Right */}
-      <header className="w-full py-4 px-6 relative z-10">
-        <div className="flex justify-end">
-          <button 
-            onClick={() => onSignup({ fullName: 'User', email: 'user@example.com' })}
-            className="text-white font-medium hover:text-gray-300 transition-colors"
+      {/* Hero Section */}
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
           >
-            Sign In
-          </button>
+            <h1 className="text-4xl md:text-6xl font-bold text-navy-900 mb-6">
+              Ice Breakers, Build Relationships,<br />
+              <span className="text-gray-600">Make Connections</span>
+            </h1>
+            
+            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+              ice breakers and conversation starters 
+              to ease anxiety and build confidence
+            </p>
+
+            <motion.button
+              onClick={handleGetStarted}
+              className="inline-flex items-center space-x-3 bg-navy-900 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-navy-800 transition-all duration-300 shadow-lg hover:shadow-xl"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span>Generate Ice Breakers</span>
+              <SafeIcon icon={FiArrowRight} className="text-xl" />
+            </motion.button>
+          </motion.div>
         </div>
-      </header>
+      </section>
 
-      {/* Main Content */}
-      <div className="flex flex-col items-center justify-center px-6 py-16 relative z-10">
-        {/* Headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-4xl font-semibold text-white text-center mb-4 max-w-4xl"
-          style={{ fontFamily: 'Inter', fontWeight: '600' }}
-        >
-          Ice Breakers, Build Relationships, Make Connections
-        </motion.h1>
-        
-        {/* Sub-headline */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-white text-center mb-16 max-w-2xl"
-          style={{ fontFamily: 'Inter', fontSize: '18px' }}
-        >
-          Professional-grade, actionable strategies, ice breakers and conversation starters that transform cold connections into warm conversations.
-        </motion.p>
-
-        {/* Core Input Form */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="w-full max-w-2xl space-y-6"
-        >
-          {/* Text Box 1 */}
-          <textarea
-            value={formData.userProfile}
-            onChange={(e) => setFormData({ ...formData, userProfile: e.target.value })}
-            placeholder="Your Profile: Add any context here. (e.g., 'Met at the SF tech conference,' 'We have a mutual friend, Jane Doe,' 'I know they're passionate about sustainable energy...')"
-            className="w-full h-32 p-6 text-base border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 resize-none focus:outline-none focus:border-white focus:ring-2 focus:ring-white focus:ring-opacity-20 transition-all"
-            style={{ fontFamily: 'Inter' }}
-          />
-
-          {/* Text Box 2 */}
-          <textarea
-            value={formData.targetProfile}
-            onChange={(e) => setFormData({ ...formData, targetProfile: e.target.value })}
-            placeholder="Target Profile & Context: Add any context here. (e.g., 'Loves hiking,' 'Has a golden retriever,' 'From Colorado,' 'Works in marketing,' 'Wearing a band t-shirt')."
-            className="w-full h-32 p-6 text-base border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 resize-none focus:outline-none focus:border-white focus:ring-2 focus:ring-white focus:ring-opacity-20 transition-all"
-            style={{ fontFamily: 'Inter' }}
-          />
-
-          {/* Generate Button */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleGenerateClick}
-            className="w-full py-4 px-8 font-medium text-white border-2 border-white rounded-lg hover:bg-white hover:text-gray-900 transition-all duration-300 flex items-center justify-center"
-            style={{ 
-              backgroundColor: '#0B1F3F',
-              fontFamily: 'Inter', 
-              fontWeight: '500',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              minHeight: '56px'
-            }}
+      {/* Features Section */}
+      <section className="py-20 bg-white/80 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
           >
-            <span>✨ Generate Ice Breakers</span>
-          </motion.button>
-        </motion.div>
-      </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-navy-900 mb-4">
+              Why Ice Breaker BluePrint Works
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Our blueprints and strategies reduce approach anxiety by making the conversation
+              more natural and facilitating connections through small, manageable steps
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                className="text-center p-6 rounded-xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 card-hover"
+              >
+                <div className="w-16 h-16 bg-navy-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <SafeIcon icon={feature.icon} className="text-2xl text-navy-900" />
+                </div>
+                <h3 className="text-xl font-semibold text-navy-900 mb-2">{feature.title}</h3>
+                <p className="text-gray-600">{feature.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-navy-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              From stranger to connected in seconds!
+            </h2>
+            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+              Join thousands who are using our Blueprints to unlock conversations with ease.
+            </p>
+            <motion.button
+              onClick={handleGetStarted}
+              className="inline-flex items-center space-x-3 bg-white text-navy-900 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span>Spark a Chat</span>
+              <SafeIcon icon={FiArrowRight} className="text-xl" />
+            </motion.button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Signup Modal */}
+      <SignupModal 
+        isOpen={showSignupModal}
+        onClose={() => setShowSignupModal(false)}
+        onSuccess={handleSignupSuccess}
+      />
     </div>
   );
 };
