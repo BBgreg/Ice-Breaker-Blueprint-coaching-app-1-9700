@@ -1,45 +1,93 @@
 import React, { useEffect, useRef } from 'react';
 
-const AnimatedBackground = () => {
-  const containerRef = useRef(null);
+const ConnectionAnimation = () => {
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    // Clear any existing nodes
-    container.innerHTML = '';
+    const ctx = canvas.getContext('2d');
+    let animationId;
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const nodes = [];
+    const nodeCount = 50;
 
     // Create nodes
-    for (let i = 0; i < 30; i++) {
-      const node = document.createElement('div');
-      node.className = 'node';
-      node.style.left = Math.random() * 100 + '%';
-      node.style.top = Math.random() * 100 + '%';
-      node.style.animationDelay = Math.random() * 6 + 's';
-      container.appendChild(node);
+    for (let i = 0; i < nodeCount; i++) {
+      nodes.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        radius: Math.random() * 2 + 1
+      });
     }
 
-    // Create connecting lines
-    for (let i = 0; i < 20; i++) {
-      const line = document.createElement('div');
-      line.className = 'line';
-      line.style.left = Math.random() * 80 + '%';
-      line.style.top = Math.random() * 80 + '%';
-      line.style.width = Math.random() * 200 + 100 + 'px';
-      line.style.transform = `rotate(${Math.random() * 360}deg)`;
-      line.style.animationDelay = Math.random() * 4 + 's';
-      container.appendChild(line);
-    }
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Update and draw nodes
+      nodes.forEach(node => {
+        // Update position
+        node.x += node.vx;
+        node.y += node.vy;
+
+        // Bounce off edges
+        if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
+        if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+
+        // Draw node
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(11,31,63,0.3)';
+        ctx.fill();
+      });
+
+      // Draw connections
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 100) {
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.strokeStyle = `rgba(11,31,63,${0.2 * (1 - distance / 100)})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+      }
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animate();
 
     return () => {
-      if (container) {
-        container.innerHTML = '';
-      }
+      window.removeEventListener('resize', resizeCanvas);
+      cancelAnimationFrame(animationId);
     };
   }, []);
 
-  return <div ref={containerRef} className="connection-nodes" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 pointer-events-none opacity-30"
+      style={{ zIndex: 0 }}
+    />
+  );
 };
 
-export default AnimatedBackground;
+export default ConnectionAnimation;
