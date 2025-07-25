@@ -1,148 +1,136 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import * as FiIcons from 'react-icons/fi';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import SafeIcon from '../common/SafeIcon';
+import * as FiIcons from 'react-icons/fi';
 
-const { FiX, FiMail, FiUser, FiArrowRight } = FiIcons;
+const { FiX, FiMail, FiUser } = FiIcons;
 
-const SignupModal = ({ onClose, onSignup, initialData = {} }) => {
+const SignupModal = ({ isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
-    fullName: initialData.name || '',
-    email: initialData.email || ''
+    fullName: '',
+    email: ''
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    // Prevent body scroll when modal is open
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
+    setIsLoading(true);
     
-    try {
-      setTimeout(() => {
-        onSignup({
-          fullName: formData.fullName,
-          email: formData.email
-        });
-        onClose();
-        setLoading(false);
-      }, 1000);
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-      setLoading(false);
-    }
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    onSuccess({
+      name: formData.fullName,
+      email: formData.email,
+      tier: 'free'
+    });
+    
+    setIsLoading(false);
   };
 
-  const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
+  const handleChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="modal-overlay"
-      onClick={handleOverlayClick}
-    >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="modal-content"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Complete Your Registration</h2>
-          <button 
-            onClick={onClose} 
-            className="text-accent-gray hover:text-primary-navy transition-colors p-2"
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
+            onClick={(e) => e.stopPropagation()}
           >
-            <SafeIcon icon={FiX} className="text-xl" />
-          </button>
-        </div>
-
-        <p className="text-accent-gray mb-8">
-          Create your account to access personalized ice breakers and networking strategies.
-        </p>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="form-group">
-            <label className="form-label">
-              Full Name
-            </label>
-            <div className="relative">
-              <SafeIcon icon={FiUser} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-accent-gray" />
-              <input
-                type="text"
-                required
-                value={formData.fullName}
-                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                className="input-field pl-12"
-                placeholder="Enter your full name"
-              />
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-navy-900">
+                Unlock Your First Ice Breakers
+              </h2>
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <SafeIcon icon={FiX} className="text-xl text-gray-500" />
+              </button>
             </div>
-          </div>
 
-          <div className="form-group">
-            <label className="form-label">
-              Email Address
-            </label>
-            <div className="relative">
-              <SafeIcon icon={FiMail} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-accent-gray" />
-              <input
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="input-field pl-12"
-                placeholder="Enter your email address"
-              />
-            </div>
-          </div>
+            {/* Subtitle */}
+            <p className="text-gray-600 mb-6">
+              Just enter your name and email to receive your first complimentary connection strategy.
+            </p>
 
-          {error && (
-            <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
-              {error}
-            </div>
-          )}
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+                  Full Name
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <SafeIcon icon={FiUser} className="text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    required
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy-600 focus:border-navy-600 input-focus"
+                    placeholder="Enter your full name"
+                  />
+                </div>
+              </div>
 
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            type="submit"
-            disabled={loading}
-            className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <>
-                <div className="spinner w-5 h-5 mr-2"></div>
-                Creating Account...
-              </>
-            ) : (
-              <>
-                CREATE ACCOUNT
-                <SafeIcon icon={FiArrowRight} className="ml-2" />
-              </>
-            )}
-          </motion.button>
-        </form>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <SafeIcon icon={FiMail} className="text-gray-400" />
+                  </div>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy-600 focus:border-navy-600 input-focus"
+                    placeholder="Enter your email address"
+                  />
+                </div>
+              </div>
 
-        <p className="text-sm text-accent-gray mt-6 text-center">
-          By continuing, you agree to our Terms of Service and Privacy Policy.
-        </p>
-      </motion.div>
-    </motion.div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-navy-900 text-white py-3 rounded-lg font-semibold hover:bg-navy-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Creating Account...' : 'Get My Free Analysis'}
+              </button>
+            </form>
+
+            {/* Legal Text */}
+            <p className="text-xs text-gray-500 mt-4 text-center">
+              By continuing, you agree to our Terms of Service and Privacy Polices.
+            </p>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
