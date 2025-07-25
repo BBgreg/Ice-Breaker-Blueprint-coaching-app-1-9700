@@ -59,7 +59,7 @@ const MarketingPage = () => {
               <span className="text-gray-600">Make Connections</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              ice breakers and conversation starters to ease anxiety and build confidence
+              Ice breakers and conversation starters to ease anxiety and build confidence
             </p>
             <motion.button
               onClick={handleGetStarted}
