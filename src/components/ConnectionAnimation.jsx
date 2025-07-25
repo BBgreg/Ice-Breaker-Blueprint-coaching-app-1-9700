@@ -19,15 +19,15 @@ const ConnectionAnimation = () => {
     window.addEventListener('resize', resizeCanvas);
 
     const nodes = [];
-    const nodeCount = 50;
+    const nodeCount = 30;
 
     // Create nodes
     for (let i = 0; i < nodeCount; i++) {
       nodes.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
         radius: Math.random() * 2 + 1
       });
     }
@@ -48,7 +48,7 @@ const ConnectionAnimation = () => {
         // Draw node
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(11,31,63,0.3)';
+        ctx.fillStyle = 'rgba(11,31,63,0.2)';
         ctx.fill();
       });
 
@@ -59,11 +59,11 @@ const ConnectionAnimation = () => {
           const dy = nodes[i].y - nodes[j].y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < 100) {
+          if (distance < 120) {
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(11,31,63,${0.2 * (1 - distance / 100)})`;
+            ctx.strokeStyle = `rgba(11,31,63,${0.15 * (1 - distance / 120)})`;
             ctx.lineWidth = 1;
             ctx.stroke();
           }
@@ -84,7 +84,7 @@ const ConnectionAnimation = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 pointer-events-none opacity-30"
+      className="absolute inset-0 pointer-events-none opacity-20"
       style={{ zIndex: 0 }}
     />
   );

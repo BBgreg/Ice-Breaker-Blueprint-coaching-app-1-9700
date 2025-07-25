@@ -4,12 +4,12 @@ import { motion } from 'framer-motion';
 import SafeIcon from '../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 import { useUser } from '../context/UserContext';
-import ConnectionAnimation from './ConnectionAnimation';
+import AnimatedBackground from './AnimatedBackground';
 import SignupModal from './SignupModal';
 
 const { FiArrowRight, FiCheck, FiUsers, FiTarget, FiTrendingUp, FiZap } = FiIcons;
 
-const LandingPage = () => {
+const MarketingPage = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const { setUser } = useUser();
   const navigate = useNavigate();
@@ -44,7 +44,7 @@ const LandingPage = () => {
 
   return (
     <div className="relative min-h-screen">
-      <ConnectionAnimation />
+      <AnimatedBackground />
       
       {/* Hero Section */}
       <section className="relative py-20 px-4 sm:px-6 lg:px-8">
@@ -58,12 +58,9 @@ const LandingPage = () => {
               Ice Breakers, Build Relationships,<br />
               <span className="text-gray-600">Make Connections</span>
             </h1>
-            
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              ice breakers and conversation starters 
-              to ease anxiety and build confidence
+              ice breakers and conversation starters to ease anxiety and build confidence
             </p>
-
             <motion.button
               onClick={handleGetStarted}
               className="inline-flex items-center space-x-3 bg-navy-900 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-navy-800 transition-all duration-300 shadow-lg hover:shadow-xl"
@@ -90,8 +87,7 @@ const LandingPage = () => {
               Why Ice Breaker BluePrint Works
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Our blueprints and strategies reduce approach anxiety by making the conversation
-              more natural and facilitating connections through small, manageable steps
+              Our blueprints and strategies reduce approach anxiety by making the conversation more natural and facilitating connections through small, manageable steps
             </p>
           </motion.div>
 
@@ -143,7 +139,7 @@ const LandingPage = () => {
       </section>
 
       {/* Signup Modal */}
-      <SignupModal 
+      <SignupModal
         isOpen={showSignupModal}
         onClose={() => setShowSignupModal(false)}
         onSuccess={handleSignupSuccess}
@@ -152,4 +148,4 @@ const LandingPage = () => {
   );
 };
 
-export default LandingPage;
+export default MarketingPage;

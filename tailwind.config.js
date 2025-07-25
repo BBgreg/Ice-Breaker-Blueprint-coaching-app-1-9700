@@ -8,6 +8,11 @@ export default {
     extend: {
       colors: {
         'primary-navy': '#0B1F3F',
+        'navy-900': '#0B1F3F',
+        'navy-800': '#1a2e4a',
+        'navy-600': '#2d4a73',
+        'navy-100': '#e6eaf2',
+        'navy-50': '#f3f5f9',
         'accent-gray': '#5E6A7D',
         'white': '#FFFFFF',
         'light-border': '#E1E5E9',

@@ -2,11 +2,20 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
+import { useUser } from '../context/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const { FiArrowLeft, FiMessageCircle, FiCopy, FiCheck, FiRefreshCw, FiUser, FiTarget, FiGift } = FiIcons;
 
-const BlueprintResults = ({ blueprint, onBack, onRegenerate }) => {
+const BlueprintResults = ({ onBack, onRegenerate }) => {
   const [copiedItems, setCopiedItems] = useState(new Set());
+  const { blueprint } = useUser();
+  const navigate = useNavigate();
+
+  if (!blueprint) {
+    navigate('/dashboard');
+    return null;
+  }
 
   const copyToClipboard = async (text, id) => {
     try {
@@ -100,7 +109,7 @@ const BlueprintResults = ({ blueprint, onBack, onRegenerate }) => {
                   <SafeIcon icon={section.icon} className="text-primary-dark text-xl" />
                 </div>
                 <div>
-                  <h2 className="result-card-title">{section.title}</h2>
+                  <h2 className="text-xl font-bold text-navy-900">{section.title}</h2>
                   <p className="text-secondary-text">{section.description}</p>
                 </div>
               </div>
@@ -112,7 +121,7 @@ const BlueprintResults = ({ blueprint, onBack, onRegenerate }) => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 + sectionIndex * 0.1 + index * 0.05 }}
-                    className="result-card"
+                    className="bg-white rounded-xl shadow-md p-6 border border-gray-100"
                   >
                     <div className="flex justify-between items-start mb-4">
                       <span className="text-small font-semibold text-primary-dark">
@@ -120,12 +129,15 @@ const BlueprintResults = ({ blueprint, onBack, onRegenerate }) => {
                       </span>
                       <button
                         onClick={() => copyToClipboard(
-                          section.id === 'valueadds' ? item.action : item.text,
+                          section.id === 'valueadds' ? item.action : (item.text || item.content),
                           `${section.id}-${index}`
                         )}
                         className="text-secondary-text hover:text-primary-dark transition-colors"
                       >
-                        <SafeIcon icon={copiedItems.has(`${section.id}-${index}`) ? FiCheck : FiCopy} className="text-lg" />
+                        <SafeIcon
+                          icon={copiedItems.has(`${section.id}-${index}`) ? FiCheck : FiCopy}
+                          className="text-lg"
+                        />
                       </button>
                     </div>
 
@@ -133,29 +145,29 @@ const BlueprintResults = ({ blueprint, onBack, onRegenerate }) => {
                       <div className="space-y-4">
                         <div>
                           <h4 className="font-semibold text-primary-dark mb-2">Action:</h4>
-                          <p className="result-card-content font-medium">{item.action}</p>
+                          <p className="text-lg font-medium text-navy-900">{item.action}</p>
                         </div>
                         {item.template && (
                           <div>
                             <h4 className="font-semibold text-primary-dark mb-2">Message Template:</h4>
-                            <blockquote className="bg-accent p-4 rounded-lg italic result-card-content">
+                            <blockquote className="bg-navy-50 p-4 rounded-lg italic text-navy-900">
                               "{item.template}"
                             </blockquote>
                           </div>
                         )}
-                        <div className="bg-accent p-4 rounded-lg">
+                        <div className="bg-navy-50 p-4 rounded-lg">
                           <h4 className="font-semibold text-primary-dark mb-2">Why this works:</h4>
-                          <p className="result-card-content">{item.explanation}</p>
+                          <p className="text-gray-700">{item.explanation || item.why}</p>
                         </div>
                       </div>
                     ) : (
                       <div className="space-y-4">
                         <blockquote className="text-lg font-medium text-primary-dark leading-relaxed border-l-4 border-primary-dark pl-4">
-                          "{item.text}"
+                          "{item.text || item.content}"
                         </blockquote>
-                        <div className="bg-accent p-4 rounded-lg">
+                        <div className="bg-navy-50 p-4 rounded-lg">
                           <h4 className="font-semibold text-primary-dark mb-2">Why this works:</h4>
-                          <p className="result-card-content">{item.explanation}</p>
+                          <p className="text-gray-700">{item.explanation || item.why}</p>
                         </div>
                       </div>
                     )}
@@ -174,15 +186,15 @@ const BlueprintResults = ({ blueprint, onBack, onRegenerate }) => {
             transition={{ delay: 0.4 }}
             className="card mt-12"
           >
-            <h2 className="result-card-title mb-4">Follow-Up Strategy</h2>
-            <div className="bg-accent p-6 rounded-lg space-y-4">
+            <h2 className="text-xl font-bold text-navy-900 mb-4">Follow-Up Strategy</h2>
+            <div className="bg-navy-50 p-6 rounded-lg space-y-4">
               <div>
                 <h4 className="font-semibold text-primary-dark mb-2">Next Step:</h4>
-                <p className="result-card-content">{blueprint.followUp.nextStep}</p>
+                <p className="text-gray-700">{blueprint.followUp.nextStep}</p>
               </div>
               <div>
                 <h4 className="font-semibold text-primary-dark mb-2">Suggested Topic:</h4>
-                <p className="result-card-content">{blueprint.followUp.suggestedTopic}</p>
+                <p className="text-gray-700">{blueprint.followUp.suggestedTopic}</p>
               </div>
             </div>
           </motion.div>
